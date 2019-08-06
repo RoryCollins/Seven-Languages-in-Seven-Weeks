@@ -36,11 +36,11 @@ Converting an array to a hashed array can be done most easily with the each_with
 ```ruby
 >> hashed_array={}
 => {}
-$ array = ['one','two','three']
+>> array = ['one','two','three']
 => ["one", "two", "three"]
-$ array.each_with_index {|el, i| hashed_array[i] = el}
+>> array.each_with_index {|el, i| hashed_array[i] = el}
 => ["one", "two", "three"]
-$ hashed_array
+>> hashed_array
 => {0=>"one", 1=>"two", 2=>"three"}`
 ```
 ## Can you iterate through a hash?
@@ -48,9 +48,9 @@ $ hashed_array
 In a word - yes!
 
 ```ruby
-$ hash = {1 => "one", 2 =>"two"}
+>> hash = {1 => "one", 2 =>"two"}
 => {1 => "one", 2 =>"two"}
-$ hash.each {|k,v| puts "#{k} => #{v}"}
+>> hash.each {|k,v| puts "#{k} => #{v}"}
 1 => one
 2 => two
 => {1 => "one", 2 =>"two"}
