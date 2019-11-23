@@ -7,7 +7,7 @@
 `Receivers` go on the left, `messages` on the right.
 See the following example:
 ```Io
-Io> "Hey ho, Io" print
+"Hey ho, Io" print
 ```
 In this example, the string `"Hey ho, Io"` is the receiver, and `print` is the message that we send to that receiver
 
@@ -15,13 +15,13 @@ In this example, the string `"Hey ho, Io"` is the receiver, and `print` is the m
 
 We create an object by cloning the root, `Object`.
 ```Io
-Io> Vehicle := Object clone
+Vehicle := Object clone
 ```
 
 An object is just a collection of `slots` (think key-value pairs). We can define a new slot with the assignment operator `:=`
 
-```
-Io> Vehicle description := "Something to take you places"
+```Io
+Vehicle description := "Something to take you places"
 ```
 
 We can check the value of that slot by calling the object followed by the name of the slot:
