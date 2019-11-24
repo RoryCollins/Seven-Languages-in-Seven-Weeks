@@ -65,3 +65,36 @@ Io> ferrari description
 Something to take you places
 ```
 `ferrari` begins with a lower case letter, so Io knows that it is an instance (not a type) and therefore there is no `type` slot on this object. As before, when we send the message `type` to ferrari, this message is sent to the `prototype`, where the slot is found in `Car`.
+
+### Lists and Maps
+
+A list can be created like so:
+```Io
+toDos := list("find my car", "find Continuum Transfunctioner")
+```
+the `List` type has a bunch of methods, such as `size` and `append`. Try `List slotNames` to see more.
+
+A `map` is a collection of key-value pairs.
+
+```Io
+elvis := Map clone
+elvis atPut ("home", "Graceland")
+elvis atPut ("style", "rock and roll")
+```
+
+Essentially maps work a lot like objects, so the `asObject` method is able to return the map as an abject (type Object).
+Similarly, `asList` will return a list of lists, in the format `list(list(key1, value1), list(key2, value2))`
+
+### Singletons
+
+You can override the clone method of an object to return that object, thus preventing further instantiations of a type.
+```Io
+Highlander := Object clone
+Highlander clone := Highlander
+
+fred := Highlander clone
+mike := Highlander clone
+fred == mike
+```
+
+Just be careful about overriding methods on the Object class, that might well screw you up
