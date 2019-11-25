@@ -99,7 +99,59 @@ fred == mike
 
 Just be careful about overriding methods on the Object class, that might well screw you up
 
+### Loops
+
+Infinite loops can be created with the `loop` keyword. The following code will execute until the interrupt flag `Ctrl-C` is sent.
+```Io
+loop("on and on and on" println)
+```
+
+`while` loops are syntactically simple, as below:
+
+```
+Io> i := 1
+==> 1
+Io> while(i < 11, i println; i = i + 1); "This one goes up to 11" println
+1
+2
+...
+10
+11
+This one goes up to 11
+```
+Note the semicolon, which is used here to concatenate two distinct messages.
+
+`for` loops are generally simple, taking the form:
+ `for(iterator, start, finish, increment?, action)`
+ 
+ For instance:
+```Io
+for(i, 1, 11, i println); "This one goes up to 11" println
+for(i, 1, 11, 2, i println); "This one goes up to 11" println
+```
+The first for loop gives the same output as the above `while` loop, whereas the second loop goes up in increments of 2, giving 
+```
+1
+3
+5
+7
+9
+11
+This one goes up to 11
+```
+Note that the fourth parameter is optional. This means there is a subtle pitfall when supplying extra arguments (which Io will allow).
+
+Note the following loops:
+```Io
+for(i, 1, 11, 2, i println, "extra argument")
+for(i, 1, 11, i println, "extra argument")
+```
+The first `for` loop here will print the same incremented output as before, ignoring the extra argument, however the parameters for the second loop are not parsed correctly, resulting in the following output:
+```
+==> 11
+extra argument
+```
+
 ### Conditionals
 
 `if` statements take the form `if(conditional, trueBlock, falseBlock)`
-
