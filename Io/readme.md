@@ -98,3 +98,8 @@ fred == mike
 ```
 
 Just be careful about overriding methods on the Object class, that might well screw you up
+
+### Conditionals
+
+`if` statements take the form `if(conditional, trueBlock, falseBlock)`
+
