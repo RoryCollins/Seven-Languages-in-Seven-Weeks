@@ -1,7 +1,5 @@
 # Io
-
 ## Day one
-
 ### Syntax
 
 `Receivers` go on the left, `messages` on the right.
@@ -99,6 +97,7 @@ fred == mike
 
 Just be careful about overriding methods on the Object class, that might well screw you up
 
+## Day two
 ### Loops
 
 Infinite loops can be created with the `loop` keyword. The following code will execute until the interrupt flag `Ctrl-C` is sent.
@@ -155,3 +154,11 @@ extra argument
 ### Conditionals
 
 `if` statements take the form `if(conditional, trueBlock, falseBlock)`
+
+Not a lot else to say about that really. 
+
+### Operators
+
+### Messages
+
+### Reflection
