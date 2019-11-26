@@ -144,6 +144,12 @@ The first `for` loop here will print the same incremented output as before, igno
 extra argument
 ```
 
+We also have a `foreach` function too.
+```Io
+Object slotNames foreach(slotName, writeln(slotName))
+``` 
+This will write the name of every slot on the object method.
+
 ### Conditionals
 
 `if` statements take the form `if(conditional, trueBlock, falseBlock)`
@@ -213,3 +219,8 @@ unless := method(
 unless(1==2, "One is not two" println, "One is two" println) # ==> One is not two
 ```
 In the above example, we use `doMessage` to execute an arbitrary message. 
+
+### Reflection
+
+Through a combination of `proto` and `slotNames` we can recursively examine the ancestors of an object and their methods.
+But there isn't anything particularly surprising about doing that, so I'm going to ignore it. If you want a good look, have a mosey on over to page 66 of the book.
