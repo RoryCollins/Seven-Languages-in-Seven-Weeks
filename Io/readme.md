@@ -168,4 +168,48 @@ false xor false #false
 ```
 ### Messages
 
-### Reflection
+Just about everything in Io is a `message`.One of the crucial characteristics of Io is the ability to examine a message's components through `reflection`.
+
+`Messages` are made up of three components, the `sender`, the `target` and the `arguments`.  The `sender` is the object that sent the message, and the `target` is the object that executes the message. You know what `arguments` are.
+We can use the `call` message to examine each of these components for a message.
+
+```Io
+postOffice := Object clone
+postOffice packageSender := method(call sender)             #return the sender
+
+mailer := Object clone                                      #mailer object
+mailer deliveryFrom := method(postOffice packageSender)     #Send the packageSender message to postOffice
+mailer deliveryFrom                                         #mailer object
+```
+
+In the above example, invoking `deliveryFrom` on the `mailer` object sends a `message` to `postOffice`, which returns the `sender` - i.e. the `mailer` object itself.
+Similarly, we can look at the target:
+
+```Io
+postOffice packageTarget := method(call target)             #return the target
+
+mailer deliveryTo := method(postOffice packageTarget)   
+mailer deliveryTo                                           #postOffice object
+```
+
+We can look at the arguments and the name as well:
+```Io
+postOffice packageInfo := method(call message arguments)
+postOffice packageName := method(call message name)
+
+postOffice packageInfo(216, "Belvoir Drive")    #list(216, "Belvoir Drive")
+postOffice packageName                          #packageName
+```
+ 
+Io allows the receiver (or `target`) to evaluate the message (unlike, for instance java, which computes each value of a parameter and places that on the stack).
+This is some pretty powerful stuff, meaning you can delay the execution, like in the following example.
+```Io
+unless := method(
+    (call sender doMessage(call message argAt(0))) 
+        ifFalse (call sender doMessage(call message argAt(1)))
+        ifTrue (call sender doMessage(call message argAt(2)))
+)
+
+unless(1==2, "One is not two" println, "One is two" println) # ==> One is not two
+```
+In the above example, we use `doMessage` to execute an arbitrary message. 
