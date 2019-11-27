@@ -59,3 +59,20 @@ twoDimensionalArray := list(
 
 sumAll(twoDimensionalArray) println
 ```
+
+*Four*
+myAverage
+```Io
+List myAverage := method(
+    total := 0;
+    self foreach(element,
+        if(element type == Number type,
+            total = total+element,
+            Exception raise(element .. " is not a Number")));
+    total / (self size))
+
+
+(list(3,4,5) myAverage) println     # 4
+(list() myAverage) println          # -nan
+(list(3,4,"a") myAverage) println   # Exception: "a" is not a Number
+```
