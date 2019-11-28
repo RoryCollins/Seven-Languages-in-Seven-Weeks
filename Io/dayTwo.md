@@ -63,16 +63,65 @@ sumAll(twoDimensionalArray) println
 *Four*
 myAverage
 ```Io
+doFile("assertEqual.io")
+
 List myAverage := method(
     total := 0;
-    self foreach(element,
+   self foreach(element,
         if(element type == Number type,
             total = total+element,
             Exception raise(element .. " is not a Number")));
     total / (self size))
 
-
-(list(3,4,5) myAverage) println     # 4
-(list() myAverage) println          # -nan
-(list(3,4,"a") myAverage) println   # Exception: "a" is not a Number
+assertEqual(4, (list(3,4,5) myAverage))         # Pass
+assertEqual(20, (list(10,15,35) myAverage))     # Pass
+assertEqual(??, (list(10,"a",35) myAverage))    # Exception: "a" is not a Number
 ```
+
+*Five*
+Write a prototype for a two-dimensional list, with `dim(x, y)`, `get(x, y)` and `set(x, y, value)` methods
+
+```Io
+doFile("assertEqual.io")
+
+Matrix := Object clone
+Matrix contents ::= List clone
+Matrix dim := method(x, y, (
+    ys := List clone;
+    for(i, 1, y, (
+        xs := List clone;
+        for(i, 1, x, (
+            xs append(0)
+        ));
+        ys append(xs)
+    ));
+    self setContents(ys)
+))
+
+
+Matrix get := method(x,y, (
+    xs := (self contents) at(y);
+    xs at(x)
+))
+
+Matrix set := method(x, y, value, (
+    xs := (self contents) at(y);
+    xs atPut(x, value)
+))
+
+matrix := Matrix clone
+matrix dim(4,2)
+matrix set(3,1,5)
+
+assertEqual(5, matrix get(3, 1))    # Pass
+```
+
+
+## Appendix
+`assertEqual(expected, actual)` is defined in `tdd.io` as the following:
+```Io
+assertEqual := method(expected, actual, if(
+    actual == expected,
+    "Pass" println,
+    Exception raise("expected: " .. expected .. " | received: " .. actual )))
+``` 
