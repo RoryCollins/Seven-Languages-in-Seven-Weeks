@@ -63,29 +63,31 @@ sumAll(twoDimensionalArray) println
 *Four*
 myAverage
 ```Io
-doFile("assertEqual.io")
+doFile("tdd.io")
 
 List myAverage := method(
-    total := 0;
-   self foreach(element,
-        if(element type == Number type,
-            total = total+element,
-            Exception raise(element .. " is not a Number")));
+    total :=  self reduce(total, current, if((current type) == "Number", total + current, Exception raise(current .. " is not a Number")), 0)
     total / (self size))
 
 assertEqual(4, (list(3,4,5) myAverage))         # Pass
 assertEqual(20, (list(10,15,35) myAverage))     # Pass
-assertEqual(??, (list(10,"a",35) myAverage))    # Exception: "a" is not a Number
+assertEqual("??", (list(10,"a",35) myAverage))  # Exception: "a" is not a Number
 ```
 
-*Five*
-Write a prototype for a two-dimensional list, with `dim(x, y)`, `get(x, y)` and `set(x, y, value)` methods
+*Five* & *Six*
+Write a prototype for a two-dimensional list, with `dim(x, y)`, `get(x, y)`, `set(x, y, value)` and `transpose()` methods
+
 
 ```Io
-doFile("assertEqual.io")
+doFile("tdd.io")
+
+Number to := method(end, range := List clone; for(i, self, end-1, range append(i)); range)
 
 Matrix := Object clone
 Matrix contents ::= List clone
+Matrix x ::= nil
+Matrix y ::= nil
+
 Matrix dim := method(x, y, (
     ys := List clone;
     for(i, 1, y, (
@@ -96,6 +98,8 @@ Matrix dim := method(x, y, (
         ys append(xs)
     ));
     self setContents(ys)
+    self setX(x)
+    self setY(y)
 ))
 
 
@@ -109,11 +113,24 @@ Matrix set := method(x, y, value, (
     xs atPut(x, value)
 ))
 
+Matrix transpose := method(
+    newMatrix := Matrix clone;
+    newMatrix dim(self y, self x);
+    (0 to(self x)) foreach(x, (
+        (0 to(self y)) foreach(y, (
+        newMatrix set(y, x, (self get(x, y)))
+        ))
+       ));
+    newMatrix
+)
+
 matrix := Matrix clone
 matrix dim(4,2)
 matrix set(3,1,5)
 
-assertEqual(5, matrix get(3, 1))    # Pass
+assertEqual(5, matrix get(3, 1))
+transposed_matrix := matrix transpose()
+assertEqual(5, transposed_matrix get(1, 3))
 ```
 
 
