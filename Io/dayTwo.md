@@ -66,7 +66,13 @@ myAverage
 doFile("tdd.io")
 
 List myAverage := method(
-    total :=  self reduce(total, current, if((current type) == "Number", total + current, Exception raise(current .. " is not a Number")), 0)
+    total :=  self reduce(
+        total, 
+        current, 
+        if((current type) == "Number", 
+            total + current, 
+            Exception raise(current .. " is not a Number")), 
+        0);
     total / (self size))
 
 assertEqual(4, (list(3,4,5) myAverage))         # Pass
