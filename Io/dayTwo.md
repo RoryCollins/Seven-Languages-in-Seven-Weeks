@@ -87,7 +87,7 @@ Write a prototype for a two-dimensional list, with `dim(x, y)`, `get(x, y)`, `se
 ```Io
 doFile("tdd.io")
 
-Number to := method(end, range := List clone; for(i, self, end-1, range append(i)); range)
+range := method(start, end, seq := list clone; for(i, start, end, seq append(i)); seq)
 
 Matrix := Object clone
 Matrix contents ::= List clone
@@ -95,19 +95,10 @@ Matrix x ::= nil
 Matrix y ::= nil
 
 Matrix dim := method(x, y, (
-    ys := List clone;
-    for(i, 1, y, (
-        xs := List clone;
-        for(i, 1, x, (
-            xs append(0)
-        ));
-        ys append(xs)
-    ));
-    self setContents(ys)
+    self setContents(range(0, y-1) map(currentRow := List clone setSize(x)))
     self setX(x)
     self setY(y)
 ))
-
 
 Matrix get := method(x,y, (
     xs := (self contents) at(y);
@@ -120,23 +111,22 @@ Matrix set := method(x, y, value, (
 ))
 
 Matrix transpose := method(
-    newMatrix := Matrix clone;
-    newMatrix dim(self y, self x);
-    (0 to(self x)) foreach(x, (
-        (0 to(self y)) foreach(y, (
-        newMatrix set(y, x, (self get(x, y)))
-        ))
-       ));
+    newMatrix := Matrix clone
+    newMatrix dim(self y, self x)
+    range(0, (self x)-1) map(x,
+        range(0, self y-1) map(y,
+            newMatrix set(y, x, self get(x, y))
+        )
+    );
     newMatrix
 )
 
 matrix := Matrix clone
 matrix dim(4,2)
-matrix set(3,1,5)
+matrix set(2,0,5)
 
-assertEqual(5, matrix get(3, 1))
-transposed_matrix := matrix transpose()
-assertEqual(5, transposed_matrix get(1, 3))
+assertEqual(5, matrix get(2, 0))
+assertEqual(5, (matrix transpose) get(0, 2))
 ```
 
 
