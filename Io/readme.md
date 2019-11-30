@@ -275,4 +275,54 @@ This method simply calls `atPut` with the arguments. However, remember that `key
 Since our `key`s already have quotation marks, we need to strip these as we parse each `key`.
 
 Now when we load in our phonebook file, we call `doString`, telling `Io` to evaluate the file as code, which returns a hash  of phone numbers.
-  
+
+### Method Missing / Building with `forward`
+
+Similar to Ruby, `Io` will let you override the behaviour when invoking a method that does not exist.
+For example, say you want to express the following `HTML` block:
+```html
+<body>
+<p>
+This is a simple paragraph.
+</p>
+</body>
+```
+... like this:
+```Io
+body(
+    p("This is a simple paragraph.")
+)
+```
+
+This can be done through `Io`s `forward` command.  Here's the code:
+```Io
+Builder := Object clone
+
+Builder forward := method(
+    writeln("<", call message name, ">");
+    call message arguments foreach(
+        arg,
+        content := self doMessage(arg);
+        if(content type == "Sequence", writeln(content)));
+    writeln("</", call message name, ">"))
+
+Builder ul(
+    li("Io"),
+    li("Lua"),
+    li("JavaScript"))
+```
+
+This will generate:
+```html
+<ul>
+<li>
+Io
+</li>
+<li>
+Lua
+</li>
+<li>
+JavaScript
+</li>
+</ul>
+```
