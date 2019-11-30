@@ -155,6 +155,35 @@ assertEqual(5, (matrix transpose) get(0, 2))    # Pass
 assertEqual(matrix, read_matrix)                # Pass
 ```
 
+### Eight
+Write a program that gives you ten tries to guess a random number from 1-100. If you would like, give a hint 
+of `hotter` or `colder` after the first guess.
+
+```Io
+secretNumber := (Random value(1, 100) round);
+tries := 0
+lastDistance := nil
+currentDistance := nil
+found := false
+
+while((tries < 10) and (found not),
+  tries = tries + 1
+  guess := File standardInput readLine("Enter your guess: ") asNumber
+
+  currentDistance := (secretNumber - guess) abs
+  if(currentDistance == 0) then (
+    found = true
+  ) else (
+    if (lastDistance == nil,
+        "Try again" println,
+        if(currentDistance < lastDistance, "Hotter" println, "Colder" println))
+    lastDistance = currentDistance
+  )
+)
+
+if(found, "You found the secret number!", "Sorry, you ran out of guesses.") println
+```
+
 
 ## Appendix
 `assertEqual(expected, actual)` is defined in `tdd.io` as the following:
