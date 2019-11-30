@@ -236,7 +236,7 @@ But there isn't anything particularly surprising about doing that, so I'm going 
 }
 ```
 
-Instead of parsing the input, we can tell `Io` to interpret the input.
+Instead of parsing the list, we can tell `Io` to interpret it.
 
 ```Io
 OperatorTable addAssignOperator(":", "atPutNumber")
