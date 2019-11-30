@@ -2,7 +2,8 @@
 
 ## Do:
 
-*One*. Implement the Fibonacci Sequence with recursion and with loops
+### One 
+Implement the Fibonacci Sequence with recursion and with loops
 ```Io
 fib := method(number, (
     result := if(
@@ -34,7 +35,7 @@ fibWithLoop := method(number, (
 
 ```
 
-*Two*.
+### Two
 Override the `/` operator to return 0 when the denominator is zero.
 ```Io
 Number dividedBy := Number getSlot("/")
@@ -47,7 +48,7 @@ Number / := method(other,
 ```
 In the above, `(call target)` can be replaced by `self`
 
-*Three*
+### Three
 Write a program to add up all the numbers in a two-dimensional array
 ```Io
 sumAll := method(numberSequences, numberSequences flatten sum)
@@ -60,7 +61,7 @@ twoDimensionalArray := list(
 sumAll(twoDimensionalArray) println
 ```
 
-*Four*
+### Four
 myAverage
 ```Io
 doFile("tdd.io")
@@ -80,53 +81,78 @@ assertEqual(20, (list(10,15,35) myAverage))     # Pass
 assertEqual("??", (list(10,"a",35) myAverage))  # Exception: "a" is not a Number
 ```
 
-*Five* & *Six*
+### Five
+
 Write a prototype for a two-dimensional list, with `dim(x, y)`, `get(x, y)`, `set(x, y, value)` and `transpose()` methods
 
+### Six - Optional
+
+Add a `transpose()` method that transposes the matrix such that `matrix get(x, y)` == `matrix transpose() get(y, x)`
+
+### Seven
+
+Add functionality to read and write the matrix to a file  
 
 ```Io
 doFile("tdd.io")
 
 range := method(start, end, seq := list clone; for(i, start, end, seq append(i)); seq)
 
-Matrix := Object clone
-Matrix contents ::= List clone
-Matrix x ::= nil
-Matrix y ::= nil
+Matrix := Object clone do(
+    contents ::= List clone
+    x ::= nil
+    y ::= nil
 
-Matrix dim := method(x, y, (
-    self setContents(range(0, y-1) map(currentRow := List clone setSize(x)))
-    self setX(x)
-    self setY(y)
-))
+    dim := method(x, y, (
+        self setContents(range(0, y-1) map(currentRow := List clone setSize(x)))
+        self setX(x)
+        self setY(y)
+    ))
 
-Matrix get := method(x,y, (
-    xs := (self contents) at(y);
-    xs at(x)
-))
+    get := method(x,y, (
+        xs := (self contents) at(y);
+        xs at(x)
+    ))
 
-Matrix set := method(x, y, value, (
-    xs := (self contents) at(y);
-    xs atPut(x, value)
-))
+    set := method(x, y, value, (
+        xs := (self contents) at(y);
+        xs atPut(x, value)
+    ))
 
-Matrix transpose := method(
-    newMatrix := Matrix clone
-    newMatrix dim(self y, self x)
-    range(0, (self x)-1) map(x,
-        range(0, self y-1) map(y,
-            newMatrix set(y, x, self get(x, y))
+    transpose := method(
+        newMatrix := Matrix clone
+        newMatrix dim(self y, self x)
+        range(0, (self x)-1) map(x,
+            range(0, self y-1) map(y,
+                newMatrix set(y, x, self get(x, y))
+            )
+        );
+        newMatrix
+    )
+
+    toFile := method(name, File with(name) open write(self serialized) close)
+
+    fromFile := method(name, doRelativeFile(name))
+
+    == := method(other, (
+        (self x) == (other x) and
+        (self y) == (other y) and
+        (self contents) == (other contents)
         )
-    );
-    newMatrix
+    )
 )
 
 matrix := Matrix clone
 matrix dim(4,2)
 matrix set(2,0,5)
 
-assertEqual(5, matrix get(2, 0))
-assertEqual(5, (matrix transpose) get(0, 2))
+matrix toFile("foo.txt")
+
+read_matrix := Matrix fromFile("foo.txt")
+
+assertEqual(5, matrix get(2, 0))                # Pass
+assertEqual(5, (matrix transpose) get(0, 2))    # Pass
+assertEqual(matrix, read_matrix)                # Pass
 ```
 
 
