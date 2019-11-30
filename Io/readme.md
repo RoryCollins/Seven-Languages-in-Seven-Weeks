@@ -224,3 +224,55 @@ In the above example, we use `doMessage` to execute an arbitrary message.
 
 Through a combination of `proto` and `slotNames` we can recursively examine the ancestors of an object and their methods.
 But there isn't anything particularly surprising about doing that, so I'm going to ignore it. If you want a good look, have a mosey on over to page 66 of the book.
+
+## Day three
+### Domain-Specific Languages
+
+`Io` allows the developer to manipulate the syntax, so imagine you wanted to represent phoneNumbers in the following format:
+```text
+{
+  "Bob Anders": "07456123456",
+  "Janet Anderson": "07123456123"
+}
+```
+
+Instead of parsing the input, we can tell `Io` to interpret the input.
+
+```Io
+OperatorTable addAssignOperator(":", "atPutNumber")
+curlyBrackets := method(
+    r := Map clone;
+    call message arguments foreach(arg,
+        r doMessage(arg)
+        );
+    r
+)
+Map atPutNumber := method(
+    self atPut(
+        call evalArgAt(0) asMutable removePrefix("\"") removeSuffix("\""),
+        call evalArgAt(1)
+        )
+)
+
+s := File with("phonebook.txt") openForReading contents
+phoneNumbers := doString(s)
+phoneNumbers keys println       # list(Janet Anderson, Bob Anders)
+phoneNumbers values println     # list(07123456123, 07456123456)
+``` 
+
+Deconstructing the above:
+
+First we register `:` in the `assignment operator table`. This means that whenever `:` is encountered, 
+`Io` will parse that as `atPutNumber`, understanding that the first argument is a key (string) and the second
+argument is a value. So `key : value` is parsed as `atPutNumber("key", value)`
+
+Next up, the parser calls the `curlyBrackets` method whenever it encounters curly brackets (`{}`). Within this method,
+we create an empty `Map`, and for each element in the curly brackets we send the message (in its `key : value` form)
+to that `Map`.
+
+The last thing we need to do is define the `atPutNumber` method that will be invoked whenever `Io` sees a `:`.
+This method simply calls `atPut` with the arguments. However, remember that `key : value` is parsed as `atPutNumber("key", value)`.
+Since our `key`s already have quotation marks, we need to strip these as we parse each `key`.
+
+Now when we load in our phonebook file, we call `doString`, telling `Io` to evaluate the file as code, which returns a hash  of phone numbers.
+  
