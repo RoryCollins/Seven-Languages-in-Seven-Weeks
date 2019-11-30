@@ -326,3 +326,88 @@ JavaScript
 </li>
 </ul>
 ```
+
+### Concurrency
+There are three areas of concurrency
+
+#### Coroutines
+
+A `coroutine` provides a way to suspend and resume execution of a process. Think of it as a function with multiple entry
+ and exit points. Each `yield` will voluntarily suspend the process, and transfer control to another process.
+You can fire a message asynchronously by using `@` or `@@`. The latter immediately returns `nil` and starts the message in its own thread. 
+ 
+
+```Io
+vizzini := Object clone
+vizzini talk := method(
+    "Fezzik, are there rocks ahead?" println;
+    yield;
+    "No more rhymes now, I mean it." println;
+    yield;)
+
+fezzik := Object clone
+fezzik rhyme := method(
+    yield;
+    "If there are, we'll all bbe dead." println;
+    yield;
+    "Anybody want a peanut?" println)
+
+vizzini @@talk; fezzik @@rhyme
+
+Coroutine currentCoroutine pause
+```
+
+In this block of code, we fire the `talk` and `rhyme` methods asynchronously, and then sned the `pause` message to the currently
+executing coroutine at the end to wait until all of the async messages complete, before exiting. Without this final statement
+the program will terminate before the messages complete.
+
+The result is, as expected:
+
+```text
+Fezzik, are there rocks ahead?
+If there are, we'll all bbe dead.
+No more rhymes now, I mean it.
+Anybody want a peanut?
+Scheduler: nothing left to resume so we are exiting
+```
+
+#### Actors
+`Actors` are responsible for changing their own state, and can only access other actors through closely controlled queues.
+This holds certain advantages over `threads` which can change each other's state without restriction, making them vulnerable
+to `race conditions`, where two `threads` access the same state at the same time. 
+
+Sending an asynchronous message to any object makes it an `actor`
+
+```Io
+slower := Object clone
+slower start := method(wait(2); writeln("slowly"))
+
+faster := Object clone
+faster start := method(wait(1); writeln("quickly"))
+```
+
+Running the code sequentially, as in the following:
+```Io
+slower start; faster start;
+```
+... results in the first message finishing before the second can begin, giving the output:
+
+```text
+slowly
+quickly
+```
+
+However, we can make each object run its own thread with the `@@` symbol, as in the below code.
+
+```Io
+slower @@start; faster @@start; wait(3)
+```
+```text
+quickly
+slowly
+```
+
+Note we add a `wait` at the end. As in the `coroutines` example, this is to prevent the program from terminating before
+the executing threads have completed. This `wait` can be replaced with the `Coroutine currentCoroutine pause` line from 
+that example, if you don't know how long a timeout to specify.  The only difference that I can see is the presence of the
+`Scheduler: nothing left to resume so we are exiting` output.
