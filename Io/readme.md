@@ -328,7 +328,7 @@ JavaScript
 ```
 
 ### Concurrency
-There are three areas of concurrency
+There are three areas of concurrency, `coroutines`, `actors` and `futures`
 
 #### Coroutines
 
@@ -411,3 +411,19 @@ Note we add a `wait` at the end. As in the `coroutines` example, this is to prev
 the executing threads have completed. This `wait` can be replaced with the `Coroutine currentCoroutine pause` line from 
 that example, if you don't know how long a timeout to specify.  The only difference that I can see is the presence of the
 `Scheduler: nothing left to resume so we are exiting` output.
+
+#### Futures
+
+In `Io`, a `future` is a promise of a value, rather than the value itself. These are declared with the `@` symbol.
+In the code below, the console will immediately write the line `wait here while we get the futureResult`, but the second
+`writeln` statement will only be executed once the `futureResult` has been resolved.
+
+```Io
+slowFetch := method(wait(3); "got it")
+
+futureResult :=  @slowFetch
+
+writeln("wait here while we get the futureResult")
+writeln("fetched ", futureResult size,  " bytes")
+writeln("done")
+```
