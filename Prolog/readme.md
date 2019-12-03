@@ -137,3 +137,39 @@ Two = tiger
 yes
 
 ```
+
+## Day two
+### Recursion
+
+When dealing with lists and trees, it's more common to use recursion than iteration.
+
+```Prolog
+father(zeb, john_boy_sr).
+father(john_boy_sr, john_boy_jr).
+
+ancestor(X, Y) :- father(X, Y).
+ancestor(X, Y) :- father(X, Z), ancestor(Z, Y).
+```
+`X` is an ancestor of `Y` if `X` is a father of `Y`.
+
+`X` is an ancestor of `Y` if `X` is a father of `Z`, and `Z` is an ancestor of `Y`.
+
+We can query this as expected, to find both ancestors and descendants.
+```Prolog 
+ancestor(zeb, Who)
+% Who = john_boy_sr ? a
+% Who = john_boy_jr
+
+ancestor(Who, john_boy_jr)
+% Who = john_boy_sr ? a
+% Who = zeb
+```
+
+If you're not careful, each recursive call will add to the call stack, and you run the risk of `stack overflow`. Prolog
+can optimise recursion with `tail call recursion`, whereby the final result can be calculated by the last call alone, 
+meaning prolog is able to discard the call stack.  Without tail call recursion, the results of each call are needed to
+calculate the answer, therefore the call stack cannot be discarded. 
+
+See [here](https://stackoverflow.com/questions/33923/what-is-tail-recursion)
+for more information on tail recursion.
+
