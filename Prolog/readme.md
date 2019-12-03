@@ -156,11 +156,11 @@ ancestor(X, Y) :- father(X, Z), ancestor(Z, Y).
 
 We can query this as expected, to find both ancestors and descendants.
 ```Prolog 
-ancestor(zeb, Who)
+ancestor(zeb, Who).
 % Who = john_boy_sr ? a
 % Who = john_boy_jr
 
-ancestor(Who, john_boy_jr)
+ancestor(Who, john_boy_jr).
 % Who = john_boy_sr ? a
 % Who = zeb
 ```
