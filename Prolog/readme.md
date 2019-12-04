@@ -173,3 +173,85 @@ calculate the answer, therefore the call stack cannot be discarded.
 See [here](https://stackoverflow.com/questions/33923/what-is-tail-recursion)
 for more information on tail recursion.
 
+### Lists & Tuples
+
+Tuples are containers of fixed length, and can be specified as `(1,2,3)`
+
+Lists are containers of variable length, and can be specified as `[1,2,3]`
+
+#### Unification
+
+Two tuples / lists unify only if they have the same number of elements and if each element unifies.
+```Prolog
+(1,2,3) = (1,2,3).      % yes
+[1,2,3] = [1,2,3].      % yes
+
+(1,2,3) = (1,2,3,4).    % no
+[1,2,3] = [1,2,3,4].    % no
+
+(1,3,2) = (1,2,3).      % no
+[1,3,2] = [1,2,3].      % no
+
+(A, 2, C) = (1, B, 3).  % A=1; B=2; C=3; yes
+[A, 2, C] = [1, B, 3].  % A=1; B=2; C=3; yes
+
+(2, 2, 3) = (X, X, Y).  % X=2; Y=3; yes
+[2, 2, 3] = [X, X, Y].  % X=2; Y=3; yes
+
+() = ().                % exception - can't have an empty tuple
+[] = [].                % yes
+```
+In these examples, you can see that unification doesn't matter which side the variables are on.
+
+Lists have a capability that `tuples` don't, the ability to be deconstructed with `[Head|Tail]`
+
+Some examples:
+```Prolog
+[a, b, c] = [Head|Tail].            % Head=a; Tail=[b, c]; yes
+[a] = [Head|Tail].                  % Head=a; Tail=[]; yes
+[] = [Head|Tail].                   % no
+[a, b, c] = [a|Tail].               % Tail=[b, c]; yes
+[a, b, c] = [a|[Head|Tail]].        % Head=b; Tail=[c]; yes
+[a, b, c, d, e] = [_, _|[Head|_]].  % Head=c; yes
+```
+`_` unifies with everything, so we told `Prolog` to skip the first two elements and split the 
+rest into head and tail.
+
+Note, the `|` is used to read the following as a list. So if we replace the `|` with a `,` before the `[Head...]` we get:
+```Prolog
+[a, b, c, d, e] = [_, _,[Head|_]].     % no
+[a, b, [c, d, e]] = [_, _,[Head|_]].   % Head=c; yes
+```
+
+#### Lists and Math
+These next examples make use of the `[Head|Tail]` destructuring, so they'll only work with `Lists`.
+
+```Prolog
+count(0, []).
+count(Count, [Head|Tail]) :- count(TailCount, Tail), Count is TailCount + 1.
+
+countWithTailRecursion(Count, [], Total) :- Count is Total.
+countWithTailRecursion(Count, [Head|Tail], Total) :- countWithTailRecursion(Count, Tail, Total + 1).
+countWithTailRecursion(Count, X) :- countWithTailRecursion(Count, X, 0).
+
+sum(0, []).
+sum(Total, [Head|Tail]) :- sum(Sum, Tail), Total is Head + Sum.
+
+sumWithTailRecursion(Total, [], CumulativeTotal) :- Total is CumulativeTotal.
+sumWithTailRecursion(Total, [Head|Tail], CumulativeTotal) :- sumWithTailRecursion(Total, Tail, CumulativeTotal + Head).
+sumWithTailRecursion(Total, X) :- sumWithTailRecursion(Total, X, 0).
+
+average(Average, List) :- sum(Sum, List), count(Count, List), Average is Sum/Count.
+```
+Here I've added a `withTailRecursion` method, so that the difference is made clear.
+
+In either case, 
+```Prolog
+count(Count, [1, 2, 3]).                    % Count = 3 ? ; no 
+countWithTailRecursion(Count, [1, 2, 3]).   % Count = 3 ? ; no 
+
+sum(Sum, [1, 2, 3]).                        % Sum = 6 ? ; no 
+sumWithTailRecursion(Sum, [1, 2, 3]).       % Sum = 6 ? ; no 
+
+average(Average, [1, 2, 3]).                % Average = 2.0 ? ; no
+```
