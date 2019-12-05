@@ -33,9 +33,9 @@ Reverse the elements of a list
 ```Prolog
 reverseElements(Result, [], Result).
 reverseElements(Result, [Head|Tail], CumulativeResult)      :- append([Head], CumulativeResult, NewResult), reverseElements(Result, Tail, NewResult).
-reverseElements(Result, [Head|Tail])                        :- reverseElements(Result, Tail, [Head]).
+reverseElements(Result, [Head|Tail])                        :- reverseElements(Result, Tail, [Head]), !.
 
-reverseElements(Result, [1,2,3,4,5]). % Result = [5,4,3,2,1] ? ; no
+reverseElements(Result, [1,2,3,4,5]). % Result = [5,4,3,2,1] yes
 ```
 
 ### Two
@@ -44,13 +44,14 @@ Find the smallest element of a list
 smallestElement(Result, [], Result).
 smallestElement(Result, [Head|Tail], CurrentSmallest)       :- Head < CurrentSmallest, smallestElement(Result, Tail, Head).
 smallestElement(Result, [Head|Tail], CurrentSmallest)       :- Head >= CurrentSmallest, smallestElement(Result, Tail, CurrentSmallest).
-smallestElement(Result, [Head|Tail])                        :- smallestElement(Result, Tail, Head).
+smallestElement(Result, [Head|Tail])                        :- smallestElement(Result, Tail, Head), !.
 
-smallestElement(Result, [2,3,1,5]). % Result = 1 ? ; no
+smallestElement(Result, [2,3,1,5]). % Result = 1 yes
 ```
 
 ### Three
 Sort the elements of a list
+#### The wrong way
 ```Prolog
 partition(_, [], Lowers, Lowers, Highers, Highers).
 partition(X, [Head|Tail], Lowers, CumulativeLowers, Highers, CumulativeHighers) :-
@@ -69,10 +70,32 @@ quickSort(Result, [Head|Tail]) :-
     quickSort(LowerResult, Lowers),
     quickSort(HigherResult, Highers),
     append(LowerResult, [Head], FirstPart),
-    append(FirstPart, HigherResult, Result).
+    append(FirstPart, HigherResult, Result),
+    !.
 
-quickSort(Result, [7,6,3,8,2,5,9]). % Result = [2,3,5,6,7,8,9] ? ; no
+quickSort(Result, [7,6,3,8,2,5,9]). % Result = [2,3,5,6,7,8,9] (1 ms) yes
 ```
 
 In the quickSort example, the `partition` algorithm is tail-call optimised, but the `quickSort` algorithm is not. 
 Given that this calls itself twice on each recursion, is it possible to optimise this? 
+
+#### The right way
+
+On reflection, my mindset in the above was not set to `Prolog thinking`. All I need are the `rules` - i.e.
+* The result must contain all of the elements of the original list
+* Each element in the result must be less than or equal to the next element
+
+This means I can approach the problem without even implementing a sorting algorithm:
+```Prolog
+isSorted([_|[]]).
+isSorted([Head|[Head2|Tail]])           :- Head =< Head2, isSorted([Head2|Tail]), !.
+
+allElementsMatched([], []).
+allElementsMatched([Head|Tail], List2)  :- member(Head, List2), select(Head, List2, Remaining), allElementsMatched(Tail, Remaining), !.
+
+sortElements(Sorted, Unsorted)          :- allElementsMatched(Sorted, Unsorted), isSorted(Sorted), !.
+
+sortElements(Result, [7,6,3,8,2,5,9]). % Result = [2,3,5,6,7,8,9] yes
+```
+
+The trade-off here is the complexity of the algorithm vs the speed of the operation.
