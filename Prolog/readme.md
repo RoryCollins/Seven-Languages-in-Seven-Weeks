@@ -255,3 +255,109 @@ sumWithTailRecursion(Sum, [1, 2, 3]).       % Sum = 6 ? ; no
 
 average(Average, [1, 2, 3]).                % Average = 2.0 ? ; no
 ```
+
+## Day three
+Now that we know we don't need to solve the problem of implementing an algorithm, let's see how we can put this to good use: 
+
+### Sudoku
+The goal is to solve a 4x4 Sudoku grid, with the following interface:
+```Prolog
+sudoku([_, _, 2, 3,
+        _, _, _, _, 
+        _, _, _, _, 
+        3, 4, _, _], Solution).
+```
+The rules of solving a sudoku from a given input are:
+1. The numbers in the solution must match the numbers in the input
+2. A sudoku grid is 16 cells, with values 1 - 4
+3. The board has four rows, four columns and four squares
+4. A solution is valid if each row, column and square has no repeated elements
+
+#### Rule one
+Unification pretty much solves this one out of the box.
+```Prolog
+sudoku(Puzzle, Solution) :- 
+    Puzzle = Solution.
+```
+
+#### Rule two
+Again, unification can be used to force the length of the input list, and the built-in `fd_domain(List, LowerBound, UpperBound)`
+can enforce the values:
+```prolog
+    % ...
+    Puzzle = [S11, S12, S13, S14,
+              S21, S22, S23, S24,
+              S31, S32, S33, S34,
+              S41, S42, S43, S44],
+    fd_domain(Puzzle, 1, 4).
+```
+I named the elements `S{XY}` to note the Row and Column of the element
+
+#### Rule three
+This rule is around the description of the board
+```Prolog
+    % ...
+    Row1 = [S11, S12, S13, S14],
+    Row2 = [S21, S22, S23, S24],
+    Row3 = [S31, S32, S33, S34],
+    Row4 = [S41, S42, S43, S44],
+    Col1 = [S11, S21, S31, S41],
+    Col2 = [S12, S22, S32, S42],
+    Col3 = [S13, S23, S33, S43],
+    Col4 = [S14, S24, S34, S44],
+    Square1 = [S11, S12, S21, S22],
+    Square2 = [S13, S14, S23, S24],
+    Square3 = [S31, S32, S41, S42],
+    Square4 = [S33, S34, S43, S44].
+```
+
+#### Rule four
+All that remains is the validation of the board, in which we can use another built-in predicate, `fd_all_different(List)` 
+```Prolog
+valid([]).
+valid([Head|Tail]) :-
+    fd_all_different(Head),
+    valid(Tail).
+```
+
+#### All together
+```Prolog
+valid([]).
+valid([Head|Tail]) :-
+    fd_all_different(Head),
+    valid(Tail).
+
+sudoku(Puzzle, Solution) :- 
+    Puzzle = Solution,
+    Puzzle = [S11, S12, S13, S14,
+              S21, S22, S23, S24,
+              S31, S32, S33, S34,
+              S41, S42, S43, S44],
+    fd_domain(Puzzle, 1, 4),
+    Row1 = [S11, S12, S13, S14],
+    Row2 = [S21, S22, S23, S24],
+    Row3 = [S31, S32, S33, S34],
+    Row4 = [S41, S42, S43, S44],
+    Col1 = [S11, S21, S31, S41],
+    Col2 = [S12, S22, S32, S42],
+    Col3 = [S13, S23, S33, S43],
+    Col4 = [S14, S24, S34, S44],
+    Square1 = [S11, S12, S21, S22],
+    Square2 = [S13, S14, S23, S24],
+    Square3 = [S31, S32, S41, S42],
+    Square4 = [S33, S34, S43, S44],
+    valid([ Row1, Row2, Row3, Row4,
+            Col1, Col2, Col3, Col4,
+            Square1, Square2, Square3, Square4]). 
+```
+And the results:
+```text
+sudoku([_, _, 2, 3,
+        _, _, _, _, 
+        _, _, _, _, 
+        3, 4, _, _], Solution).
+
+Solution = [4,1,2,3,2,3,4,1,1,2,3,4,3,4,1,2]
+
+yes
+```
