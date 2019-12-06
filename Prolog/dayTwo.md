@@ -52,6 +52,8 @@ smallestElement(Result, [2,3,1,5]). % Result = 1 yes
 ### Three
 Sort the elements of a list
 #### The wrong way
+
+Implementing the `quickSort` algorithm in prolog:
 ```Prolog
 partition(_, [], Lowers, Lowers, Highers, Highers).
 partition(X, [Head|Tail], Lowers, CumulativeLowers, Highers, CumulativeHighers) :-
@@ -73,11 +75,8 @@ quickSort(Result, [Head|Tail]) :-
     append(FirstPart, HigherResult, Result),
     !.
 
-quickSort(Result, [7,6,3,8,2,5,9]). % Result = [2,3,5,6,7,8,9] (1 ms) yes
+quickSort(Result, [7,6,3,8,2,5,9]). % Result = [2,3,5,6,7,8,9] yes
 ```
-
-In the quickSort example, the `partition` algorithm is tail-call optimised, but the `quickSort` algorithm is not. 
-Given that this calls itself twice on each recursion, is it possible to optimise this? 
 
 #### The right way
 
@@ -98,4 +97,4 @@ sortElements(Sorted, Unsorted)          :- allElementsMatched(Sorted, Unsorted),
 sortElements(Result, [7,6,3,8,2,5,9]). % Result = [2,3,5,6,7,8,9] yes
 ```
 
-The trade-off here is the complexity of the algorithm vs the speed of the operation.
+The trade-off here is the complexity of the algorithm vs control over the operation.
