@@ -361,3 +361,8 @@ Solution = [4,1,2,3,2,3,4,1,1,2,3,4,3,4,1,2]
 
 yes
 ```
+
+## Final thoughts
+It took a while, but when the language `clicked`, I was really impressed with how it can be used to solve problems that
+other languages would just simply _suck_ at.  From playing around with this language, I now know how to recognise the constraint
+based problems for which `Prolog` is designed.
